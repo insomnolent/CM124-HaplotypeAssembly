@@ -101,14 +101,57 @@ lines = len(read_matrix)
 # check how long the haplotype should be later
 length = len(read_matrix[0])
 
+# set beginning of hap1 and hap2
 subset1 = takeSubset(read_matrix, 0)
 print subset1
 hap1 = largest(subset1)
-print hap1
+print 'hap1', hap1
 subset2 = filter(subset1, hap1)
 print subset2
 hap2 = largest(subset2)
-print hap2
+print 'hap2', hap2
+
+print 'next index [1]'
+
+for i in range(1, 2):
+    readset1 = takeSubset(read_matrix, i)
+    print readset1
+    read1 = largest(readset1)
+    print 'read1', read1
+
+    readset2 = filter(readset1, read1)
+    print readset2
+    read2 = largest(readset2)
+    print 'read2', read2
+
+    # if read1 overlaps with haplotype1, then read2 overlaps with haplotype2
+    # doesn't work right now but will fix later
+    if read1[0] == hap1[i]:
+        count = i
+        for j in range(0, len(read1)):
+            if read1[j] != hap1[count]:
+                print 'no overlap', read1[j]
+                hap1 += read1[j]
+                print 'new hap1', hap1
+        for k in range(0, len(read2)):
+            if read2[k] != hap2[count]:
+                hap2 += read2[k]
+    # if read1 doesn't overlap with hap1 (and so overlaps with hap2)
+    else:
+        print 'if read1 doesnt overlap'
+        count = i
+        for j in range(0, len(read1)):
+            if read1[j] != hap2[count]:
+                print 'no overlap', read1[j]
+                hap2 += read1[j]
+                print 'new hap1', hap1
+        for k in range(0, len(read2)):
+            if read2[k] != hap1[count]:
+                hap2 += read2[k]
+
+    print 'for testing'
+    print hap1
+    print hap2
 
 trackLine = trackIndex = 0
 hap1 = hap2 = ''
