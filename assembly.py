@@ -196,24 +196,29 @@ end = False
 hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
 
+
+
 # create new matrix with less overlapped reads
 # copy = []
 # i = 0
 # while i < len(new_matrix)-1:
 #     line1 = new_matrix[i]
 #     line2 = new_matrix[i+1]
-#     if not overlap(removeDash(line1), removeDash(line2)):
+#     if overlap(removeDash(line1), removeDash(line2)):
 #         copy.append(line2)
+#     else:
+#         copy.append(line1)
+#         copy.append(line2)
+#         i += 1
 #     i += 1
 # print 'copy '
 # for c in copy:
 #     print c
-
-        # somelist[:] = [x for x in somelist if not determine(x)]
+# somelist[:] = [x for x in somelist if not determine(x)]
 
 # currently doesn't work for every single case
 # doesn't work if a read overlaps with both haplotypes
-for i in range(2, 100):
+for i in range(2, len(new_matrix)):
     read1 = new_matrix[i]
     print read1
     ind = findStart(read1)
