@@ -1,4 +1,5 @@
 import os
+import sys
 os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/data')
 # length is how long each haplotype is
 # lines is how many read fragments there are
@@ -42,9 +43,7 @@ def checkReads(read1, read2):
 
 # removes dashes before and after each string in the subset
 def removeDash(set):
-    newSet = []
-    for line in set:
-        newSet.append(line.replace('-', ''))
+    newSet = [i for i in set if i != '-']
     return newSet
 
 
@@ -89,35 +88,61 @@ def filter(matrix, ref):
 
 # write function that compares overlap of read to hap1 or hap2
 # returns true if it overlaps, false if it doesn't
-def compareReads(read, hap):
+def compareReads(read, hap, index):
     result = True
-    for j in range(0, len(hap)-1):
-        if j >= len(read):
+    for j in range(index, len(hap)):
+        # if finish iterating through read
+        if j >= len(read) or read[j] == '-':
             break
-        if read[j] != hap[j+1] and j < len(hap):
+            # if part of read disagrees with hap
+        if read[j] != hap[j] and read[j] != '-':
             result = False
+            break
     return result
+
+
+def newFiltered(reads, len):
+    new = []
+    for i in range(0, len):
+        # if i == 0:
+        #     # set beginning of hap1 and hap2
+        #     subset1 = takeSubset(reads, 0)
+        #     hap1 = largest(subset1)
+        #     subset2 = filter(subset1, hap1)
+        #     hap2 = largest(subset2)
+        #     new.append(hap1)
+        #     new.append(hap2)
+        # else:
+        readset1 = takeSubset(reads, i)
+        read1 = largest(readset1)
+        readset2 = filter(readset1, read1)
+        read2 = largest(readset2)
+        new.append(read1)
+        new.append(read2)
+    return new
 
 
 # assuming part of read1 overlaps with hap, returns part of read1 that's different from hap
 def findDiff(read, hap):
     result = ''
     count = 0
-    for j in range(0, len(hap)-1):
-        if read[count] == hap[j+1]:
+    start = findStart(read)
+    for j in range(start, len(hap)):
+        if read[j] == hap[j]:
             count += 1
-    for k in range(count+1, len(read)):
+    noDashes = removeDash(read)
+    for k in range(start + count, len(noDashes)+start):
         result += read[k]
+    print result
     return result
 
-# compare other reads to haplotype 1
-# def compareReads(set, ref):
-#     temp = ''
-#     for line in set:
-#         for i in range(0, len(line)):
-#             if line[i] != ref[i]:
-#                 temp = line
-#     return temp
+
+# finds index where read fragment starts
+def findStart(read):
+    result = 0
+    while read[result] == '-':
+        result += 1
+    return result
 
 read_matrix = read_input('small_no_error_training_reads.txt')
 read_matrix = removedupe(read_matrix)
@@ -133,58 +158,57 @@ lines = len(read_matrix)
 length = len(read_matrix[0])
 
 # make new matrix with longest reads from each subset
-new_matrix = []
-
-# set beginning of hap1 and hap2
-subset1 = takeSubset(read_matrix, 0)
-hap1 = largest(subset1)
-print 'hap1', hap1
-subset2 = filter(subset1, hap1)
-hap2 = largest(subset2)
-print 'hap2', hap2
-new_matrix.append(hap1)
-new_matrix.append(hap2)
-
-for i in range(1, length):
-    readset1 = takeSubset(read_matrix, i)
-    read1 = largest(readset1)
-    print 'read1', read1
-    readset2 = filter(readset1, read1)
-    read2 = largest(readset2)
-    print 'read2', read2
-
-    new_matrix.append(read1)
-    new_matrix.append(read2)
-
-    # if read1 overlaps with hap1
-    # currently doesn't work for every single case
-    # if compareReads(read1, hap1):
-    #     hap1 += findDiff(read1, hap1)
-    #     hap2 += findDiff(read2, hap2)
-    # else:
-    #     hap1 += findDiff(read2, hap1)
-    #     hap2 += findDiff(read1, hap2)
-
-    # print 'for testing'
-    # print 'current hap1', hap1
-    # print 'current hap2', hap2
+new_matrix = newFiltered(read_matrix, length)
 
 # get rid of empty lines in new_matrix
 new_matrix = [i for i in new_matrix if i != '']
-
+# write new file with new_matrix for testing purposes
 test = open('test_subset.txt', 'w')
 for k in range(0, len(new_matrix)):
     test.write(new_matrix[k])
     test.write('\n')
 test.close()
 
-print new_matrix
+# make smaller subset with more filtered reads
+# for i in range(0, len(new_matrix)-1):
+#     line1 = new_matrix[i]
+#     for k in range(1, len(new_matrix)):
+#         line2 = new_matrix[k]
+#         d = difflib.SequenceMatcher(None, line1, line2)
+#         match = max(d.get_matching_blocks(), key=lambda x: x[2])
+#
+#         i, j, k = match
+#         # if k is zero, then no overlap
+#         if k != 0:
+#             diff = d.b[j+k-1:len(line2)]
 
-# take a subset (all reads that start at index 0) of the whole matrix
-# determine hap1 and hap2 in that matrix
-# check with next subset (so all reads that start at next index)
-# determine largest hap1 and hap2 in that set
-# figure out which overlaps with which haplotype
-# continue building each haplotype
-# continue reading in line by line
+hap1 = removeDash(new_matrix[0])
+hap2 = removeDash(new_matrix[1])
 
+# currently doesn't work for every single case
+for i in range(2, 30):
+    read1 = new_matrix[i]
+    print read1
+    ind = findStart(read1)
+    compare1 = compareReads(read1, hap1, ind)
+    compare2 = compareReads(read1, hap2, ind)
+    # read2 = new_matrix[i+1]
+    if compare1 and compare2:
+        continue
+    elif compare1:
+        hap1 += findDiff(read1, hap1)
+        # print 'hap1 ', hap1
+        # hap2 += findDiff(read2, hap2)
+    elif compare2:
+        # hap1 += findDiff(read2, hap1)
+        hap2 += findDiff(read1, hap2)
+        # print 'hap2 ', hap2
+
+# for testing purposes
+print 'hap1'
+for i in range(0, len(hap1)):
+    sys.stdout.write(hap1[i])
+
+print '\nhap2'
+for i in range(0, len(hap2)):
+    sys.stdout.write(hap2[i])
