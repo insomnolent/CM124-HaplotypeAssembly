@@ -144,6 +144,15 @@ def findStart(read):
         result += 1
     return result
 
+
+# test if 2nd read is completely overlapped by 1st read
+def overlap(first, second):
+    result = True
+    for i in range(0, len(first)):
+        if i < len(second) and first[i] != second[i]:
+            result = False
+    return result
+
 read_matrix = read_input('small_no_error_training_reads.txt')
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
@@ -181,21 +190,43 @@ test.close()
 #         # if k is zero, then no overlap
 #         if k != 0:
 #             diff = d.b[j+k-1:len(line2)]
-
+shorter_matrix = []
+end = False
+# while not end:
 hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
 
+# create new matrix with less overlapped reads
+# copy = []
+# i = 0
+# while i < len(new_matrix)-1:
+#     line1 = new_matrix[i]
+#     line2 = new_matrix[i+1]
+#     if not overlap(removeDash(line1), removeDash(line2)):
+#         copy.append(line2)
+#     i += 1
+# print 'copy '
+# for c in copy:
+#     print c
+
+        # somelist[:] = [x for x in somelist if not determine(x)]
+
 # currently doesn't work for every single case
-for i in range(2, 30):
+# doesn't work if a read overlaps with both haplotypes
+for i in range(2, 100):
     read1 = new_matrix[i]
     print read1
     ind = findStart(read1)
     compare1 = compareReads(read1, hap1, ind)
     compare2 = compareReads(read1, hap2, ind)
     # read2 = new_matrix[i+1]
-    if compare1 and compare2:
-        continue
-    elif compare1:
+    # if compare1 and compare2:
+    #     # create new matrix with longer reads
+    #     # shorter_matrix.append(hap1)
+    #     # shorter_matrix.append(hap2)
+    #     # break
+    #     continue
+    if compare1:
         hap1 += findDiff(read1, hap1)
         # print 'hap1 ', hap1
         # hap2 += findDiff(read2, hap2)
