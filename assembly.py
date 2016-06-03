@@ -101,15 +101,6 @@ def compareReads(read, hap, index):
     return result
 
 
-# if i == 0:
-#     # set beginning of hap1 and hap2
-#     subset1 = takeSubset(reads, 0)
-#     hap1 = largest(subset1)
-#     subset2 = filter(subset1, hap1)
-#     hap2 = largest(subset2)
-#     new.append(hap1)
-#     new.append(hap2)
-# else:
 def newFiltered(reads, len):
     new = []
     for i in range(0, len):
@@ -192,7 +183,6 @@ test.close()
 #             diff = d.b[j+k-1:len(line2)]
 shorter_matrix = []
 end = False
-# while not end:
 hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
 
@@ -212,13 +202,15 @@ while i < len(new_matrix)-1:
         copy.append(line1)
         copy.append(line2)
     i += 2
-print 'copy '
-for c in copy:
-    print c
+# print 'copy '
+# for c in copy:
+#     print c
+
+# list comprehensions
 # somelist[:] = [x for x in somelist if not determine(x)]
 
-for i in range(2, len(copy)):
-    read1 = copy[i]
+for i in range(2, len(new_matrix)):
+    read1 = new_matrix[i]
     # print read1
     ind = findStart(read1)
     compare1 = compareReads(read1, hap1, ind)
@@ -236,30 +228,6 @@ for i in range(2, len(copy)):
     elif compare2:
         hap2 += findDiff(read1, hap2)
         # print 'hap2 ', hap2
-
-# currently doesn't work for every single case
-# doesn't work if a read overlaps with both haplotypes
-# for i in range(2, len(new_matrix)):
-#     read1 = new_matrix[i]
-#     print read1
-#     ind = findStart(read1)
-#     compare1 = compareReads(read1, hap1, ind)
-#     compare2 = compareReads(read1, hap2, ind)
-#     # read2 = new_matrix[i+1]
-#     # if compare1 and compare2:
-#     #     # create new matrix with longer reads
-#     #     # shorter_matrix.append(hap1)
-#     #     # shorter_matrix.append(hap2)
-#     #     # break
-#     #     continue
-#     if compare1:
-#         hap1 += findDiff(read1, hap1)
-#         # print 'hap1 ', hap1
-#         # hap2 += findDiff(read2, hap2)
-#     elif compare2:
-#         # hap1 += findDiff(read2, hap1)
-#         hap2 += findDiff(read1, hap2)
-#         # print 'hap2 ', hap2
 
 # for testing purposes
 print 'hap1'
