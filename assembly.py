@@ -206,24 +206,6 @@ print 'copy '
 for c in copy:
     print c
 
-# create another new matrix with less overlaps
-copy2 = []
-j = 0;
-while i < len(copy)-1:
-    line1 = copy[j]
-    line2 = copy[j+1]
-    if overlap(removeDash(line2), removeDash(line1)):
-        copy2.append(line1)
-        # i += 1
-    # elif overlap(removeDash(line1), removeDash(line1)):
-    #    copy.append(line1)
-    else:
-        copy2.append(line2)
-        copy2.append(line1)
-    j += 2
-print 'copy2 '
-for c in copy2:
-    print c
 # list comprehensions
 # somelist[:] = [x for x in somelist if not determine(x)]
 
