@@ -144,7 +144,7 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('easy_no_error_2_chromosomes_test_reads.txt')
+read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 test = open('test_noDupes.txt', 'w')
@@ -169,18 +169,6 @@ for k in range(0, len(new_matrix)):
     test.write('\n')
 test.close()
 
-# make smaller subset with more filtered reads
-# for i in range(0, len(new_matrix)-1):
-#     line1 = new_matrix[i]
-#     for k in range(1, len(new_matrix)):
-#         line2 = new_matrix[k]
-#         d = difflib.SequenceMatcher(None, line1, line2)
-#         match = max(d.get_matching_blocks(), key=lambda x: x[2])
-#
-#         i, j, k = match
-#         # if k is zero, then no overlap
-#         if k != 0:
-#             diff = d.b[j+k-1:len(line2)]
 shorter_matrix = []
 end = False
 hap1 = removeDash(new_matrix[0])
@@ -215,13 +203,7 @@ for i in range(2, len(new_matrix)):
     ind = findStart(read1)
     compare1 = compareReads(read1, hap1, ind)
     compare2 = compareReads(read1, hap2, ind)
-    # read2 = new_matrix[i+1]
-    # if compare1 and compare2:
-    #     # create new matrix with longer reads
-    #     # shorter_matrix.append(hap1)
-    #     # shorter_matrix.append(hap2)
-    #     # break
-    #     continue
+
     if compare1:
         hap1 += findDiff(read1, hap1)
         # print 'hap1 ', hap1
