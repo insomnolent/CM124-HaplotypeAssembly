@@ -144,7 +144,7 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('easy_no_error_2_chromosomes_test_reads.txt')
+read_matrix = read_input('large_no_error_2_chromosomes_training_reads.txt')
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 test = open('test_noDupes.txt', 'w')

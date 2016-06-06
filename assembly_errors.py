@@ -75,7 +75,7 @@ def takeSubset(matrix, index):
     return result
 
 
-# filter out reads that don't fit into haplotype 1
+# filter out reads that don't fit into haplotype
 def filter(matrix, ref):
     temp = []
     for line in matrix:
@@ -101,11 +101,16 @@ def compareReads(read, hap, index):
     return result
 
 
+# change newFiltered to account for some errors
+# in both hap1 and hap2 reads
+# maybe compare it column by column
 def newFiltered(reads, len):
     new = []
     for i in range(0, len):
         readset1 = takeSubset(reads, i)
+        # finding the largest isn't really necessary for updated data sets
         read1 = largest(readset1)
+        # filters out other reads that don't match with the first read
         readset2 = filter(readset1, read1)
         read2 = largest(readset2)
         new.append(read1)
@@ -175,7 +180,7 @@ hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
 
 
-# create new matrix with less overlapped reads
+# create new matrix that accounts for errors
 copy = []
 i = 0
 while i < len(new_matrix)-1:
@@ -183,9 +188,7 @@ while i < len(new_matrix)-1:
     line2 = new_matrix[i+1]
     if overlap(removeDash(line1), removeDash(line2)):
         copy.append(line1)
-        # i += 1
-    # elif overlap(removeDash(line1), removeDash(line1)):
-    #    copy.append(line1)
+
     else:
         copy.append(line1)
         copy.append(line2)
