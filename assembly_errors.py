@@ -1,5 +1,7 @@
 import os
 import sys
+import collections
+
 os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/data 3')
 # length is how long each haplotype is
 # lines is how many read fragments there are
@@ -23,22 +25,6 @@ def removedupe(reads):
         if i not in nodupe:
             nodupe.append(i)
     return nodupe
-
-
-# check if read1 is in read2
-def checkReads(read1, read2):
-    read1 = read1.replace('-', '')
-    read2 = read2.replace('-', '')
-    check = True
-    if len(read1) > len(read2):
-        for j in range(0, len(read1)):
-            if read1[j] != read2[j]:
-                check = False
-    else:
-        for j in range(0, len(read2)):
-            if read1[j] != read2[j]:
-                check = False
-    return check
 
 
 # removes dashes before and after each string in the subset
@@ -101,6 +87,22 @@ def compareReads(read, hap, index):
     return result
 
 
+# finds reads from subset that are similar (only 1 error) to read
+def findSimilar(subset):
+    # check each col of each line of subset and see how many cols match
+    track = 0
+    str = ""
+    for i in range(0, len(subset)):
+        print subset[i]
+        str += subset[i]
+        str += " "
+    c = collections.Counter()
+    freq = c(test.split()).most_common()
+    print "check freq"
+    print freq
+    return 2
+
+
 # change newFiltered to account for some errors
 # in both hap1 and hap2 reads
 # maybe compare it column by column
@@ -108,8 +110,8 @@ def newFiltered(reads, len):
     new = []
     for i in range(0, len):
         readset1 = takeSubset(reads, i)
-        # finding the largest isn't really necessary for updated data sets
-        read1 = largest(readset1)
+        # read1 = largest(readset1)
+        findSimilar(readset1)
         # filters out other reads that don't match with the first read
         readset2 = filter(readset1, read1)
         read2 = largest(readset2)
@@ -150,13 +152,21 @@ def overlap(first, second):
     return result
 
 read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
-read_matrix = removedupe(read_matrix)
+# removes duplicates
+# can't remove duplicates anymore since you have to
+# compare them to look for sequencing errors
+# read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
-test = open('test_noDupes.txt', 'w')
-for k in range(0, len(read_matrix)):
-    test.write(read_matrix[k])
-    test.write('\n')
-test.close()
+# test = open('test_noDupes.txt', 'w')
+# for k in range(0, len(read_matrix)):
+#     test.write(read_matrix[k])
+#     test.write('\n')
+# test.close()
+
+# print out for testing purposes
+print 'new_matrix '
+for c in read_matrix:
+    print c
 # set size of read_matrix to new size
 lines = len(read_matrix)
 # check how long the haplotype should be later
@@ -180,26 +190,8 @@ hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
 
 
-# create new matrix that accounts for errors
-copy = []
-i = 0
-while i < len(new_matrix)-1:
-    line1 = new_matrix[i]
-    line2 = new_matrix[i+1]
-    if overlap(removeDash(line1), removeDash(line2)):
-        copy.append(line1)
-
-    else:
-        copy.append(line1)
-        copy.append(line2)
-    i += 2
-print 'copy '
-for c in copy:
-    print c
-
 # list comprehensions
 # somelist[:] = [x for x in somelist if not determine(x)]
-
 for i in range(2, len(new_matrix)):
     read1 = new_matrix[i]
     # print read1

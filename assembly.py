@@ -144,7 +144,7 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('large_no_error_2_chromosomes_training_reads.txt')
+read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 test = open('test_noDupes.txt', 'w')
@@ -152,6 +152,11 @@ for k in range(0, len(read_matrix)):
     test.write(read_matrix[k])
     test.write('\n')
 test.close()
+
+print 'new_matrix '
+for c in read_matrix:
+    print c
+
 # set size of read_matrix to new size
 lines = len(read_matrix)
 # check how long the haplotype should be later
@@ -168,6 +173,7 @@ for k in range(0, len(new_matrix)):
     test.write(new_matrix[k])
     test.write('\n')
 test.close()
+
 
 # make smaller subset with more filtered reads
 # for i in range(0, len(new_matrix)-1):
@@ -202,9 +208,7 @@ while i < len(new_matrix)-1:
         copy.append(line1)
         copy.append(line2)
     i += 2
-print 'copy '
-for c in copy:
-    print c
+
 
 # list comprehensions
 # somelist[:] = [x for x in somelist if not determine(x)]
@@ -215,13 +219,6 @@ for i in range(2, len(new_matrix)):
     ind = findStart(read1)
     compare1 = compareReads(read1, hap1, ind)
     compare2 = compareReads(read1, hap2, ind)
-    # read2 = new_matrix[i+1]
-    # if compare1 and compare2:
-    #     # create new matrix with longer reads
-    #     # shorter_matrix.append(hap1)
-    #     # shorter_matrix.append(hap2)
-    #     # break
-    #     continue
     if compare1:
         hap1 += findDiff(read1, hap1)
         # print 'hap1 ', hap1
