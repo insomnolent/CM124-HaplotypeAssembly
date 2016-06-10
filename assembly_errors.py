@@ -1,8 +1,8 @@
 import os
 import sys
-import collections
+from collections import defaultdict
 
-os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/data 3')
+os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/Final_2')
 # length is how long each haplotype is
 # lines is how many read fragments there are
 length = lines = 0
@@ -34,6 +34,7 @@ def removeDash(set):
 
 
 # return largest read in that subset
+# for data sets where read lengths aren't all the same
 def largest(set):
     large = ''
     for line in set:
@@ -90,33 +91,63 @@ def compareReads(read, hap, index):
 # finds reads from subset that are similar (only 1 error) to read
 def findSimilar(subset):
     # check each col of each line of subset and see how many cols match
-    track = 0
+    # for some reason import Counter doesn't work
     str = ""
+    freq = []
     for i in range(0, len(subset)):
-        print subset[i]
         str += subset[i]
         str += " "
-    c = collections.Counter()
-    freq = c(test.split()).most_common()
-    print "check freq"
-    print freq
-    return 2
 
+    # {i:freq.count(i) for i in set(subset)}
+        # could also work
+    print 'testing'
+    print freq[6]
+    return freq
+
+
+def gettopreads(subset):
+    return top2(get_frequency(subset))
+
+
+def get_frequency(subset):
+    freq = defaultdict(int)
+    for c in subset:
+        freq[c] += 1
+
+    # array = subset.split('\n')
+    # freq = {}
+    # for a in array:
+    #     try:
+    #        freq[a] += 1
+    #     except:
+    #        freq[a]= 1
+    return freq
+
+
+def top2(frequency):
+    array = [(k,v) for k,v in frequency.items()]
+    sorted_array = sorted(array, key=lambda x: -x[1])
+    if len(sorted_array) == 1:
+        return [k for k, v in sorted_array[0:1]]
+    else:
+        return [k for k, v in sorted_array[0:2]]
 
 # change newFiltered to account for some errors
 # in both hap1 and hap2 reads
 # maybe compare it column by column
-def newFiltered(reads, len):
+def newFiltered(reads, length):
     new = []
-    for i in range(0, len):
+    for i in range(0, length):
         readset1 = takeSubset(reads, i)
-        # read1 = largest(readset1)
-        findSimilar(readset1)
-        # filters out other reads that don't match with the first read
-        readset2 = filter(readset1, read1)
-        read2 = largest(readset2)
-        new.append(read1)
-        new.append(read2)
+        print 'i is', i
+        topreads = gettopreads(readset1)
+        print 'topreads length:', len(topreads)
+
+        if len(topreads) == 1:
+            new.append(topreads[0])
+        elif len(topreads) > 1:
+            new.append(topreads[0])
+            new.append(topreads[1])
     return new
 
 
@@ -151,10 +182,14 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
+
+# returns inverse of a read
+def inverse(read):
+    
+read_matrix = read_input('./medium/example/input/reads_low_error.txt')
 # removes duplicates
-# can't remove duplicates anymore since you have to
-# compare them to look for sequencing errors
+# can't remove duplicates anymore since you have to compare them to look for sequencing errors
+
 # read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 # test = open('test_noDupes.txt', 'w')
@@ -164,9 +199,7 @@ read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
 # test.close()
 
 # print out for testing purposes
-print 'new_matrix '
-for c in read_matrix:
-    print c
+
 # set size of read_matrix to new size
 lines = len(read_matrix)
 # check how long the haplotype should be later
@@ -177,16 +210,23 @@ new_matrix = newFiltered(read_matrix, length)
 
 # get rid of empty lines in new_matrix
 new_matrix = [i for i in new_matrix if i != '']
-# write new file with new_matrix for testing purposes
-test = open('test_subset.txt', 'w')
-for k in range(0, len(new_matrix)):
-    test.write(new_matrix[k])
-    test.write('\n')
-test.close()
 
-shorter_matrix = []
+print 'new_matrix '
+for c in new_matrix[0:500]:
+    print c
+
+# write new file with new_matrix for testing purposes
+# test = open('test_subset.txt', 'w')
+# for k in range(0, len(new_matrix)):
+#     test.write(new_matrix[k])
+#     test.write('\n')
+# test.close()
+
 end = False
 hap1 = removeDash(new_matrix[0])
+# if only one read for the first index of new matrix
+if new_matrix[1][0] == '-':
+    hap2 = inverse
 hap2 = removeDash(new_matrix[1])
 
 

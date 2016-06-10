@@ -1,6 +1,6 @@
 import os
 import sys
-os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/data 3')
+os.chdir('/Users/christinesun/GitHub/CM124-HaplotypeAssembly/Final_2')
 # length is how long each haplotype is
 # lines is how many read fragments there are
 length = lines = 0
@@ -144,7 +144,7 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('easy_low_error_2_chromosomes_training_reads.txt')
+read_matrix = read_input('./easy/example/input/reads.txt')
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 test = open('test_noDupes.txt', 'w')
@@ -153,9 +153,9 @@ for k in range(0, len(read_matrix)):
     test.write('\n')
 test.close()
 
-print 'new_matrix '
-for c in read_matrix:
-    print c
+# print 'new_matrix '
+# for c in read_matrix:
+#     print c
 
 # set size of read_matrix to new size
 lines = len(read_matrix)
@@ -168,11 +168,11 @@ new_matrix = newFiltered(read_matrix, length)
 # get rid of empty lines in new_matrix
 new_matrix = [i for i in new_matrix if i != '']
 # write new file with new_matrix for testing purposes
-test = open('test_subset.txt', 'w')
-for k in range(0, len(new_matrix)):
-    test.write(new_matrix[k])
-    test.write('\n')
-test.close()
+# test = open('test_subset.txt', 'w')
+# for k in range(0, len(new_matrix)):
+#     test.write(new_matrix[k])
+#     test.write('\n')
+# test.close()
 
 
 # make smaller subset with more filtered reads
