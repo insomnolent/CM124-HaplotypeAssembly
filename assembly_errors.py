@@ -97,11 +97,6 @@ def findSimilar(subset):
     for i in range(0, len(subset)):
         str += subset[i]
         str += " "
-
-    # {i:freq.count(i) for i in set(subset)}
-        # could also work
-    print 'testing'
-    print freq[6]
     return freq
 
 
@@ -113,14 +108,6 @@ def get_frequency(subset):
     freq = defaultdict(int)
     for c in subset:
         freq[c] += 1
-
-    # array = subset.split('\n')
-    # freq = {}
-    # for a in array:
-    #     try:
-    #        freq[a] += 1
-    #     except:
-    #        freq[a]= 1
     return freq
 
 
@@ -129,8 +116,38 @@ def top2(frequency):
     sorted_array = sorted(array, key=lambda x: -x[1])
     if len(sorted_array) == 1:
         return [k for k, v in sorted_array[0:1]]
-    else:
+    elif len(sorted_array) == 2:
         return [k for k, v in sorted_array[0:2]]
+    elif len(sorted_array) == 3:
+        return [k for k, v in sorted_array[0:3]]
+    elif len(sorted_array) == 4:
+        return [k for k, v in sorted_array[0:4]]
+    elif len(sorted_array) == 5:
+        return [k for k, v in sorted_array[0:5]]
+    elif len(sorted_array) == 6:
+        return [k for k, v in sorted_array[0:6]]
+    else:
+        return [k for k, v in sorted_array[0:7]]
+
+
+def checkInverse(read1, read2):
+    track = 0
+    check = True
+    for c in read1:
+        if c == "1":
+            if read2[track] != "0":
+                check = False
+                break
+            track += 1
+        elif c == "0":
+            if read2[track] != "1":
+                check = False
+                break
+            track += 1
+    return check
+
+# for reversing a string
+# sum([abs(map(int, '10001')[i] - map(int, '0110')[i]) for i in range(len('1001'))])
 
 # change newFiltered to account for some errors
 # in both hap1 and hap2 reads
@@ -139,15 +156,26 @@ def newFiltered(reads, length):
     new = []
     for i in range(0, length):
         readset1 = takeSubset(reads, i)
-        print 'i is', i
         topreads = gettopreads(readset1)
-        print 'topreads length:', len(topreads)
-
         if len(topreads) == 1:
             new.append(topreads[0])
         elif len(topreads) > 1:
-            new.append(topreads[0])
-            new.append(topreads[1])
+            read1 = removeDash(topreads[0])
+            read2 = removeDash(topreads[1])
+
+            if checkInverse(read1, read2):
+                new.append(topreads[0])
+                new.append(topreads[1])
+            else:
+                # if the most frequent reads aren't inverses of each other
+                for j in range(0, len(topreads)-1):
+                    read1 = topreads[j]
+                    for k in range(j+1, len(topreads)):
+                        read2 = topreads[k]
+                        if checkInverse(removeDash(read1), removeDash(read2)):
+                            new.append(read1)
+                            new.append(read2)
+                            break
     return new
 
 
@@ -185,20 +213,17 @@ def overlap(first, second):
 
 # returns inverse of a read
 def inverse(read):
-    
+    inv = ""
+    for c in read:
+        if c == "1":
+            inv += "0"
+        else:
+            inv += "1"
+    return inv
+
+
 read_matrix = read_input('./medium/example/input/reads_low_error.txt')
-# removes duplicates
-# can't remove duplicates anymore since you have to compare them to look for sequencing errors
-
-# read_matrix = removedupe(read_matrix)
-# write new file with no duplicates for testing purposes
-# test = open('test_noDupes.txt', 'w')
-# for k in range(0, len(read_matrix)):
-#     test.write(read_matrix[k])
-#     test.write('\n')
-# test.close()
-
-# print out for testing purposes
+# read_matrix = read_input('./easy_high_error_2_chromosomes_training_reads.txt')
 
 # set size of read_matrix to new size
 lines = len(read_matrix)
@@ -208,12 +233,12 @@ length = len(read_matrix[0])
 # make new matrix with longest reads from each subset
 new_matrix = newFiltered(read_matrix, length)
 
-# get rid of empty lines in new_matrix
-new_matrix = [i for i in new_matrix if i != '']
-
 print 'new_matrix '
 for c in new_matrix[0:500]:
     print c
+
+# get rid of empty lines in new_matrix
+new_matrix = [i for i in new_matrix if i != '']
 
 # write new file with new_matrix for testing purposes
 # test = open('test_subset.txt', 'w')
@@ -226,8 +251,9 @@ end = False
 hap1 = removeDash(new_matrix[0])
 # if only one read for the first index of new matrix
 if new_matrix[1][0] == '-':
-    hap2 = inverse
-hap2 = removeDash(new_matrix[1])
+    hap2 = inverse(hap1)
+else:
+    hap2 = removeDash(new_matrix[1])
 
 
 # list comprehensions
@@ -247,10 +273,9 @@ for i in range(2, len(new_matrix)):
         # print 'hap2 ', hap2
 
 # for testing purposes
-print 'hap1'
 for i in range(0, len(hap1)):
     sys.stdout.write(hap1[i])
 
-print '\nhap2'
+print "\n"
 for i in range(0, len(hap2)):
     sys.stdout.write(hap2[i])

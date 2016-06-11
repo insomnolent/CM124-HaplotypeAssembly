@@ -174,24 +174,8 @@ new_matrix = [i for i in new_matrix if i != '']
 #     test.write('\n')
 # test.close()
 
-
-# make smaller subset with more filtered reads
-# for i in range(0, len(new_matrix)-1):
-#     line1 = new_matrix[i]
-#     for k in range(1, len(new_matrix)):
-#         line2 = new_matrix[k]
-#         d = difflib.SequenceMatcher(None, line1, line2)
-#         match = max(d.get_matching_blocks(), key=lambda x: x[2])
-#
-#         i, j, k = match
-#         # if k is zero, then no overlap
-#         if k != 0:
-#             diff = d.b[j+k-1:len(line2)]
-shorter_matrix = []
-end = False
 hap1 = removeDash(new_matrix[0])
 hap2 = removeDash(new_matrix[1])
-
 
 # create new matrix with less overlapped reads
 copy = []
@@ -208,7 +192,6 @@ while i < len(new_matrix)-1:
         copy.append(line1)
         copy.append(line2)
     i += 2
-
 
 # list comprehensions
 # somelist[:] = [x for x in somelist if not determine(x)]
