@@ -145,6 +145,7 @@ def overlap(first, second):
     return result
 
 read_matrix = read_input('./easy/example/input/reads.txt')
+
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
 test = open('test_noDupes.txt', 'w')
