@@ -144,7 +144,7 @@ def overlap(first, second):
             result = False
     return result
 
-read_matrix = read_input('./easy/example/input/reads.txt')
+read_matrix = read_input('./easy/test/input/reads.txt')
 
 read_matrix = removedupe(read_matrix)
 # write new file with no duplicates for testing purposes
@@ -216,3 +216,4 @@ for i in range(0, len(hap1)):
 print '\nhap2'
 for i in range(0, len(hap2)):
     sys.stdout.write(hap2[i])
+
