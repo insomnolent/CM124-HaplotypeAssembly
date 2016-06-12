@@ -205,10 +205,8 @@ for i in range(2, len(new_matrix)):
     compare2 = compareReads(read1, hap2, ind)
     if compare1:
         hap1 += findDiff(read1, hap1)
-        # print 'hap1 ', hap1
     elif compare2:
         hap2 += findDiff(read1, hap2)
-        # print 'hap2 ', hap2
 
 # for testing purposes
 print 'hap1'

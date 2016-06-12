@@ -145,41 +145,73 @@ def newFiltered(reads, length):
     recentread1 = ""
     recentread2 = ""
     for i in range(0, length):
-        readset1 = takeSubset(reads, i)
-        topreads = gettopreads(readset1)
+        readset = takeSubset(reads, i)
         # if beginning of read matrix then set recentreads to haplotype beginnings
         if i == 0:
-            recentread1 = topreads[0]
-            recentread2 = topreads[1]
+            recentread1 = readset[0]
+            recentread2 = readset[1]
 
-        if len(topreads) == 1:
-            if overlap(read1, recentread1, i) or overlap(read1, recentread2, i):
-                new.append(topreads[0])
-                recentread1 = topreads[0]
-        elif len(topreads) > 1:
-            read1 = topreads[0]
-            read2 = topreads[1]
-            print "i is", i
-            if (overlap(recentread1, read1, i) and overlap(recentread2, read2, i)) or (overlap(recentread1, read2, i) and overlap(recentread2, read1, i)):
-                if checkInverse(removeDash(read1), removeDash(read2)):
-                    print "checking"
-                    recentread1 = topreads[0]
-                    new.append(topreads[0])
-                    recentread2 = topreads[1]
-                    new.append(topreads[1])
-                else:
-                    # if the most frequent reads aren't inverses of each other
-                        for j in range(0, len(topreads)-1):
-                            read1 = topreads[j]
-                            for k in range(j+1, len(topreads)):
-                                read2 = topreads[k]
-                                # if checkInverse(removeDash(read1), removeDash(read2)):
-                                if (overlap(recentread1, read1, i) and overlap(recentread2, read2, i)) or (overlap(recentread1, read2, i) and overlap(recentread2, read1, i)):
-                                    recentread1 = read1
-                                    new.append(read1)
-                                    recentread2 = read2
-                                    new.append(read2)
-                                    break
+        if len(readset) == 1:
+            read1 = readset[0]
+            recentread1 = read1
+            # if percentOverlap(recentread1, read1) > 99.5 or percentOverlap(recentread1, read2) > 99.5:
+            if overlap(recentread1, read1, i) or overlap(recentread2, read1, i):
+                new.append(readset[0])
+        elif len(readset) > 1:
+            topreads = gettopreads(readset)
+            # check through other reads in readset
+            for l in range(0, len(topreads)-1):
+                read1 = topreads[l]
+                new.append(read1)
+                recentread1 = read1
+                if overlap(recentread1, read1, i):
+
+                    for k in range(l+1, len(topreads)):
+                        read2 = topreads[k]
+                        if checkInverse(removeDash(read1), removeDash(read2)):
+                            new.append(read2)
+                            recentread2 = read2
+
+                elif overlap(recentread2, read1, i):
+                    new.append(read1)
+                    recentread2 = read1
+                    if overlap(recentread1, read1, i):
+
+                        for k in range(l + 1, len(topreads)):
+                            read2 = topreads[k]
+                            if checkInverse(removeDash(read1), removeDash(read2)):
+                                new.append(read2)
+
+
+            #     # if percentOverlap(recentread1, read1) > 99.5 or percentOverlap(recentread1, read2) > 99.5:
+            #     if checkInverse(removeDash(read1), removeDash(read2)):
+            #         recentread1 = readset[0]
+            #         new.append(readset[0])
+            #         recentread2 = readset[1]
+            #         new.append(readset[1])
+            #     else:
+            #         # if the most frequent reads aren't inverses of each other
+            #         for j in range(0, len(readset)-1):
+            #             read1 = readset[j]
+            #             for k in range(j+1, len(readset)):
+            #                 read2 = readset[k]
+            #                 # if checkInverse(removeDash(read1), removeDash(read2)):
+            #                 if overlap(recentread1, read1, i):
+            #                 # if percentOverlap(recentread1, read1) > 99.5 and percentOverlap(recentread2, read2) > 99.5:
+            #                     recentread1 = read1
+            #                     new.append(read1)
+            #                     recentread2 = read2
+            #                     new.append(read2)
+            #                     break
+            #                 elif overlap(recentread1, read2, i):
+            #                 # elif percentOverlap(recentread1, read2) > 99.5 and percentOverlap(recentread2, read1) > 99.5:
+            #                     recentread1 = read2
+            #                     new.append(read2)
+            #                     recentread2 = read1
+            #                     new.append(read1)
+            #                     break
+            # recentread1 = read1
+            # recentread2 = read2
 
             # if checkInverse(removeDash(read1), removeDash(read2)):
             #     #if (overlap(recentread1, read1, i) and overlap(recentread2, read2, i)) or (overlap(recentread1, read2, i) and overlap(recentread2, read1, i)):
@@ -234,11 +266,9 @@ def findStart(read):
 
 # test if a read at that index is overlapped by the read above it
 def overlap(first, second, index):
-    if index < 100:
-        print "first", first
-        print "second", second
     result = True
-    end = index + len(removeDash(first))-1
+    startDiff = findStart(second) - findStart(first)
+    end = index + len(removeDash(first))-startDiff
     for i in range(index, end):
         if first[i] != second[i]:
             result = False
@@ -276,22 +306,25 @@ lines = len(read_matrix)
 length = len(read_matrix[0])
 
 # make new matrix with longest reads from each subset
-new_matrix = newFiltered(read_matrix, length)
+new_matrix = newFiltered(read_matrix, 50)
+
+new_matrix = removedupe(new_matrix)
 
 print 'new_matrix '
-for c in new_matrix[0:100]:
+for c in new_matrix[0:50]:
     print c
 
 # get rid of empty lines in new_matrix
 new_matrix = [i for i in new_matrix if i != '']
 
-end = False
 hap1 = removeDash(new_matrix[0])
-# if only one read for the first index of new matrix
-if new_matrix[1][0] == '-':
-    hap2 = inverse(hap1)
-else:
-    hap2 = removeDash(new_matrix[1])
+hap2 = inverse(hap1)
+
+# # if only one read for the first index of new matrix
+# if new_matrix[1][0] == '-':
+#     hap2 = inverse(hap1)
+# else:
+#     hap2 = removeDash(new_matrix[1])
 
 for i in range(2, len(new_matrix)):
     read1 = new_matrix[i]
